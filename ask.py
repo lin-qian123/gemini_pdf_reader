@@ -9,7 +9,7 @@ from llm import google_gemini
 # os.environ['HTTPS_PROXY'] = f'http://localhost:{port}'
 
 # 读取PDF
-path = 'pdf/merge.pdf'
+path = 'pdf/astro-ph/2401.04159.pdf'
 file_name = path.split('/')[-1]
 file_name, extension = os.path.splitext(file_name)
 
@@ -17,12 +17,12 @@ file_name, extension = os.path.splitext(file_name)
 # load
 loaded_em = save_and_load.load_vec(file_name)
 
-query_zh = '本文作者是谁'
+query_zh = '本文创新点是什么'
 query = google_gemini.zh_to_en(query_zh)
-print(query)
+
 idx = google_gemini.get_relevant_passage(query, loaded_em)
 passage = save_and_load.extract_text_from_pickle(file_name, idx)
-print(passage)
+
 prompt = google_gemini.make_prompt(query, passage)
 
 answer = google_gemini.get_response(prompt)

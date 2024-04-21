@@ -24,7 +24,22 @@ def get_chunks_vec(chunks):
 
 # translate chinese to english
 def zh_to_en(text):
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+    genai.configure(api_key=GOOGLE_API_KEY)
     prompt = '''Please convert the Chinese in the text below into English to form a complete word or sentence. \
+    Only reply with the translated result, no other words or sentences.\
+    WORDS OR SENTENCES:'{text}'
+
+    ANSWER:  
+    '''.format(text=text)
+    model = genai.GenerativeModel('gemini-pro')
+    answer = model.generate_content(prompt)
+    return answer.text
+
+def en_to_zh(text):
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+    genai.configure(api_key=GOOGLE_API_KEY)
+    prompt = '''Please convert the English in the text below into Chinese to form a complete word or sentence. \
     Only reply with the translated result, no other words or sentences.\
     WORDS OR SENTENCES:'{text}'
 
@@ -62,6 +77,8 @@ def make_prompt(query, relevant_passage):
   return prompt
 
 def get_response(prompt):
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+    genai.configure(api_key=GOOGLE_API_KEY)
     model = genai.GenerativeModel('gemini-pro')
     answer = model.generate_content(prompt)
     return answer.text

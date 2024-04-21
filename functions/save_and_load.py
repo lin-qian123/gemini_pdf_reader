@@ -3,7 +3,7 @@ import pickle
 
 def save(chunks, embedings, name):
     np.save(f'vec_data/{name}.npy', embedings)
-    with open(f'vec_data/{name}.pkl', 'ab') as f:
+    with open(f'vec_data/{name}.pkl', 'wb') as f:
         pickle.dump(chunks, f)
 
 def load_vec(name):

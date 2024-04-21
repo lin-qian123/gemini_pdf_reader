@@ -3,6 +3,7 @@ from functions import pdf_read
 from functions import text_split
 from functions import save_and_load
 from llm import google_gemini
+import gc
 
 # # 设置代理
 # port = os.getenv('PORT')
@@ -23,8 +24,10 @@ for file in os.listdir(f'pdf/{category}'):
     embedings = google_gemini.get_chunks_vec(chunks)
     save_and_load.save(chunks, embedings, file_name)
 
-    # load
-    loaded_em = save_and_load.load_vec(file_name)
+    # 释放内存
+    del embedings, chunks
+    gc.collect()
+
 
 
 # query_zh = '玩具模型'
