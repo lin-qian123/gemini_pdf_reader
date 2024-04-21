@@ -1,40 +1,20 @@
 import os
-import textwrap
-import chromadb
 import numpy as np
-
 import google.generativeai as genai
-import google.ai.generativelanguage as glm
-
-from IPython.display import Markdown
-from chromadb import Documents, EmbeddingFunction, Embeddings
-
-# from googletrans import Translator
 
 
-def get_chunks_vec(chunks, name):
+
+def embed_fn(text):
     GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
     genai.configure(api_key=GOOGLE_API_KEY)
+    return genai.embed_content(model='models/embedding-001',
+                              content=text,
+                              task_type="retrieval_document"
+                              )["embedding"]
 
-    documents = chunks
-    class GeminiEmbeddingFunction(EmbeddingFunction):
-        def __call__(self, input: Documents) -> Embeddings:
-            model = 'models/embedding-001'
-            title = "Custom query"
-            return genai.embed_content(model=model,
-                                        content=input,
-                                        task_type="retrieval_document",
-                                        title=title)["embedding"]
-    
-    chroma_client = chromadb.Client()
-    db = chroma_client.create_collection(name=name, embedding_function=GeminiEmbeddingFunction())
-
-    for i, d in enumerate(documents):
-        db.add(
-        documents=[d],
-        ids=[str(i)]
-        )
-    return db
+def get_chunks_vec(chunks):
+    embeddings = [embed_fn(chunk) for chunk in chunks]
+    return embeddings
 
 # # translate chinese to english
 # def zh_to_en(text):
@@ -55,9 +35,14 @@ def zh_to_en(text):
     return answer.text
 
 # Query the DB
-def get_relevant_passage(query, db):
-  passage = db.query(query_texts=[query], n_results=3)['documents'][0][0:2]
-  return passage
+def get_relevant_passage(query, embedings):
+    query_embedding = genai.embed_content(model='models/embedding-001',
+                                        content=query,
+                                        task_type="retrieval_query")["embedding"]
+    dot_products = np.dot(np.stack(embedings), query_embedding)
+    sorted_indices = np.argsort(-dot_products)
+    idx = sorted_indices[:10]
+    return idx
 
 def make_prompt(query, relevant_passage):
   escaped = relevant_passage.replace("'", "").replace('"', "").replace("\n", " ")
@@ -65,7 +50,8 @@ def make_prompt(query, relevant_passage):
   Be sure to respond in a complete sentence, being comprehensive, including all relevant background information. \
   However, you are talking to a non-technical audience, so be sure to break down complicated concepts and \
   strike a friendly and converstional tone. \
-  If the passage is irrelevant to the answer, you may ignore it. \
+  If the passage is irrelevant to the answer, You can answer with your own knowledge, but it can't be irrelevant to the article. \
+  If you are asked about the overall content of the document, you need to find summary sentences to summarize, and you can't focus on details.\
   You must answer the question in Chinese. \
   QUESTION: '{query}'
   PASSAGE: '{relevant_passage}'
