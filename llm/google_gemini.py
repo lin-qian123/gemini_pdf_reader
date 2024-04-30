@@ -51,6 +51,8 @@ def en_to_zh(text):
 
 # Query the DB
 def get_relevant_passage(query, embedings):
+    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+    genai.configure(api_key=GOOGLE_API_KEY)
     query_embedding = genai.embed_content(model='models/embedding-001',
                                         content=query,
                                         task_type="retrieval_query")["embedding"]

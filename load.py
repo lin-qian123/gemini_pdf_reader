@@ -11,11 +11,11 @@ import gc
 # os.environ['HTTPS_PROXY'] = f'http://localhost:{port}'
 
 # 读取PDF
-category = 'astro-ph'
-for file in os.listdir(f'pdf/{category}'):
+
+for file in os.listdir(f'pdf'):
 
     file_name, extension = os.path.splitext(file)
-    text = pdf_read.get_pdf_text(f'pdf/{category}/{file}')
+    text = pdf_read.get_pdf_text(f'pdf/{file}')
 
     # 拆分文本
     chunks = text_split.get_text_chunks(text)

@@ -9,7 +9,7 @@ from llm import google_gemini
 # os.environ['HTTPS_PROXY'] = f'http://localhost:{port}'
 
 # 读取PDF
-path = 'pdf/astro-ph/2401.04159.pdf'
+path = 'pdf/PhysRevE.106.014302.pdf'
 file_name = path.split('/')[-1]
 file_name, extension = os.path.splitext(file_name)
 
