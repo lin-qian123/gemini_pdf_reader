@@ -2,13 +2,13 @@
 
 ## 安装
 使用linux终端或者Windows中git bash执行  
-'''python
+```python
 git clone https://github.com/lin-qian123/gemini_pdf_reader.git
-'''
+```
 安装python依赖库  
-'''pyhton
+```pyhton
 pip install requirements.txt
-'''
+```
 
 ## 使用
 更改环境变量文件.env中的API为自己的API.  
