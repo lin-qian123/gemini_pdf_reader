@@ -1,6 +1,6 @@
 .env
 .venv
-*.pdf
-*.npy
-*.pkl
+**/*.pdf
+**/*.npy
+**/*.pkl
 **/__pycache__/
